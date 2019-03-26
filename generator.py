@@ -5,11 +5,12 @@ from math import ceil
 ## ENTER YOUR CHOICES HERE
 
 # total number of fits
-NFITS = 5
+NFITS_min = 486 # including
+NFITS_max = 1000 # not including
 # number of fits per one submission file
-NBATCH = 2
+NBATCH = 100
 # path to the input root files
-INPUT = 'Sensitivity_Tests_Mariia'
+INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/senst'
 
 #----------------------------------------------------------
 
@@ -25,12 +26,6 @@ def generator(metal, inj, fit, var):
 	2) fit: how to fit CNO (fixed or free)
 	3) var: energy variable (npmts_dt1, npmts_dt2 or nhits)
 	'''
-
-
-#	metal = arg[0]
-#	inj = arg[1]
-#	fit = arg[2]
-#	var = arg[3]
 
 	## ---------------------------------
 	## technical checks
@@ -56,7 +51,7 @@ def generator(metal, inj, fit, var):
 	## ---------------------------------
 
 	## init
-	s = Submission(metal, inj, fit, var, NFITS)
+	s = Submission(metal, inj, fit, var, NFITS_min, NFITS_max)
 	
 	print # readability
 	print '#######################################'
