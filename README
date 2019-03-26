@@ -5,11 +5,12 @@ Example usage  |
 On top of the file generator.py you can define several parameters
 
 # total number of fits
-NFITS = 5
+NFITS_min = 486 # including
+NFITS_max = 1000 # not including
 # number of fits per one submission file
-NBATCH = 2
+NBATCH = 100
 # path to the input root files
-INPUT = 'Sensitivity_Tests_Mariia'
+INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/senst'
 
 Call via:
 
