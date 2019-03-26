@@ -2,12 +2,13 @@ import os
 from math import ceil
 
 class Submission():
-	def __init__(self, metal, inj, fit, var, nfits):
+	def __init__(self, metal, inj, fit, var, nfits_min, nfits_max):
 		self.metal = metal
 		self.inj = inj
 		self.fit = fit
 		self.var = var
-		self.nfits = nfits
+		self.nfits_min = nfits_min
+		self.nfits_max = nfits_max
 		
 		## corr. fitoptions and species lists filenames
 		self.cfgname = 'fitoptions/fitoptions_' + metal + '_' + inj + '_' + var + '.cfg'
@@ -39,35 +40,37 @@ class Submission():
 		
 	def fitfiles(self, nbatch, input_folder):
 		''' Create .sh fit files for given parameters (20 files) '''
-	
+
+		num_fits = self.nfits_max - self.nfits_min
 		# folder to store the fitfiles
 		os.mkdir(self.outfolder + '/' + self.fitfolder)
 		print '|'
 		print ' - Subfolder for fit files:', self.fitfolder + '/'
-		print '|\t(', self.fitfolder + '_X.sh, X = 0..' + str(int(ceil(self.nfits*1./nbatch))) + ' )'
+		print '|\t(', self.fitfolder + '_X.sh, X = 0..' + str(int(ceil(num_fits*1./nbatch))) + ' )'
 		print '|\t( each fit = max ' + str(nbatch) + ' lines)'
 
 		# folder to store the batch files
 		os.mkdir(self.outfolder + '/' + self.batchfolder)
 		print '|'
 		print ' - Subfolder with corr. batch files:', self.batchfolder + '/'
-		print '|\t(', self.batchfolder + '_X.sh, X = 0..' + str(int(ceil(self.nfits*1./nbatch))) +  ' )'
+		print '|\t(', self.batchfolder + '_X.sh, X = 0..' + str(int(ceil(num_fits*1./nbatch))) +  ' )'
 		print '|\t( each submission = 1 fit*.sh )'
 		
 		# for now instead of 10 000 use 100, not 500 per file but 5 (20 files)
 		fitfile = None 
 #		fitfile = open('.temp','w') # dummy
-		
-		for i in range(self.nfits):
+	
+		counter = 0
+		for i in range(self.nfits_min, self.nfits_max):
 			
 			## every 5 files do:
-			if(i % nbatch == 0):
+			if(counter % nbatch == 0):
 				if fitfile:
 					prev_name = fitfile.name
 					fitfile.close()
 					make_executable(prev_name) # chmod +x
 			
-				findex = int(i / nbatch)
+				findex = int(counter / nbatch)
 				# will be accessed in self.batch()
 				self.fitname = self.fitfolder + '_' + str(findex) + '.sh'
 
@@ -83,6 +86,8 @@ class Submission():
 			logname = 'sen_' + str(i) + '_' + self.metal + '_' + self.inj + '_' + 'cno_' + self.fit + '_' + self.var + '.log'
 			
 			print >> fitfile, '$EXEC', inputname, self.cnofolder + '/TFC_sub/Hsub_' + self.cnohisto + '_0_' + self.var, self.cfgname, self.iccname, '2>&1 | tee', self.outfolder + '/' + self.logfolder + '/' + logname
+
+			counter+=1
 			
 		# last file
 		prev_name = fitfile.name
@@ -160,7 +165,7 @@ class Submission():
 		os.mkdir(self.outfolder + '/' + self.logfolder)
 		print '|'
 		print ' - Subfolder for future log files:', self.logfolder + '/'
-		print '|\t( sen_X_' + self.metal + '_' + self.inj + '_' + 'cno_' + self.fit + '_' + self.var + '.log, X = 0..' + str(self.nfits) + ' )'
+		print '|\t( sen_X_' + self.metal + '_' + self.inj + '_' + 'cno_' + self.fit + '_' + self.var + '.log, X = ' + str(self.nfits_min) + '..' + str(self.nfits_max) + ' )'
 
 
 	def batch(self, findex):
