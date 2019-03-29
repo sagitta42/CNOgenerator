@@ -1,6 +1,10 @@
-------------------------------------------------
-Example usage  |
----------------
+## Example usage
+
+python generator.py hz 0 free npmts_dt1
+
+python generator.py hz 0 free npmts_dt1 penalty=Bi210
+
+##  Parameters
 
 On top of the file generator.py you can define several parameters
 
@@ -12,13 +16,7 @@ NBATCH = 100
 # path to the input root files
 INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/senst'
 
-Call via:
-
-python generator.py hz 0 free npmts_dt1
-
-------------------------------------------------
-Inputs and outputs to the code |
--------------------------------
+## Inputs and outputs to the code
 
 
 generator.py
