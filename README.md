@@ -19,7 +19,7 @@ INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/senst'
 ```
 ## Inputs and outputs to the code
 
-
+```
 generator.py
 |
  - creator.py
@@ -43,7 +43,7 @@ generator.py
    |
     -> sbatch_*/*.sh [folder with *.sh batch submission files corr. to the fit files]
 		(e.g. sbatch_hz_0_cno_free_npmts_dt1/sbatch_hz_0_cno_free_npmts_dt1_X.sh where X is from 0 to 20)
-
+```
 
 
 The sbatch*.sh submission files should be launched from the spectralfitter folder.
