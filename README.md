@@ -4,16 +4,16 @@ python generator.py hz 0 free npmts_dt1
 
 python generator.py hz 0 free npmts_dt1 penalty=Bi210
 
-##  Parameters
+## Parameters
 
 On top of the file generator.py you can define several parameters
 
-# total number of fits
+### total number of fits
 NFITS_min = 486 # including
 NFITS_max = 1000 # not including
-# number of fits per one submission file
+### number of fits per one submission file
 NBATCH = 100
-# path to the input root files
+### path to the input root files
 INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/senst'
 
 ## Inputs and outputs to the code
