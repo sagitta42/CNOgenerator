@@ -11,7 +11,7 @@ class Submission():
         var (str): 'npmts_dt1' or 'npmts_dt2'
         nfits_min, nfits_max (int): min and max number of the input files (e.g. from 0 to 10000, or 0 to 5000 etc)
         penalty (str): species to which penalty should be applied (currently only Bi210). Penalty defined in ICC at the bottom of this file
-        random (str): species for which the mean is randomized for each fit (create separate species cc) (currently only Bi210)
+        random (list of str): species for which the mean is randomized for each fit (create separate species cc) (currently only Bi210)
         '''
         self.metal = metal
         self.inj = inj
@@ -25,7 +25,7 @@ class Submission():
         ## corr. fitoptions and species lists filenames
         self.cfgname = 'fitoptions/fitoptions_' + metal + '_' + inj + '_' + var + '.cfg'
         pen = '' if self.penalty == 'none' else '_' + self.penalty + 'penalty'
-        ran = '' if self.random == 'none' else '_' + self.random + 'random'
+        ran = '' if self.random == 'none' else '_' + '-'.join(self.random) + 'random'
         self.iccname = 'species_list/species_' + fit + pen + ran + '.icc'
         
         ## corr. histograms inside of the input file
@@ -187,13 +187,15 @@ class Submission():
             print '\tcreator.py: iccfile : generated'
         else:
             # different one for each fit
-            line_num, line = ICC[self.random]
             for i in range(self.nfits_min, self.nfits_max):
-                mn = rnd.gauss(10,2) # mean
-                lineparts = line.split(',')
-                lineparts[5] = ' ' + str(round(mn,2)) + ' '
-                lineparts[7] = ' ' + str(round(mn,2)) + ' '
-                icclines[line_num] = ','.join(lineparts)
+                for ransp in self.random:
+                    line_num, line = ICC[ransp]
+                    mn = rnd.gauss(RND[ransp][0], RND[ransp][1]) # mean
+                    lineparts = line.split(',')
+                    lineparts[5] = ' ' + str(round(mn,2)) + ' '
+                    lineparts[7] = ' ' + str(round(mn,2)) + ' '
+                    icclines[line_num] = ','.join(lineparts)
+                
                 outfile = open(self.iccname.split('.')[0] + '_' + str(i) + '.icc', 'w')
                 outfile.writelines(icclines)
                 outfile.close()
@@ -241,4 +243,7 @@ def make_executable(path):
 CNOICC = {'fixed': '   { "nu(CNO)",      -1,   kCyan,   kSolid,  2,    0.,   "fixed", 0.,  50. },\n',
             'free': '{ "nu(CNO)",      -1,   kCyan,   kSolid,  2,    5.36,   "free", 0.,  50. },\n'}
 
-ICC = {'Bi210': [27, '{ "Bi210",        -1,   kSpring, kSolid,  2,    17.5,    "penalty",  17.5,  2.0 },\n']}
+ICC = {'Bi210': [27, '{ "Bi210",        -1,   kSpring, kSolid,  2,    17.5,    "penalty",  17.5,  2.0 },\n'],
+        'C14': [14, '{ "C14",          -1,   kViolet, kSolid,  2,    3.456e+6, "penalty", 3.456e+6, 17.28e+4 },\n']}
+
+RND = {'Bi210': [10,2], 'C14': [3456000, 172800]}

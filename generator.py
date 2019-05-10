@@ -6,7 +6,7 @@ from math import ceil
 
 # total number of fits
 NFITS_min = 0 # including
-NFITS_max = 1000 # not including
+NFITS_max = 5 # not including
 # number of fits per one submission file
 NBATCH = 100
 # path to the input root files
@@ -47,10 +47,11 @@ def generator(metal, inj, fit, var, penalty, random):
     if not (penalty in ICC or penalty == 'none'):
         print '\nOptions for penalty:', ','.join(ICC.keys())
         return
-    
-    if not (random in ICC or random == 'none'):
-        print '\nOptions for random:', ','.join(ICC.keys())
-        return
+   
+    for rand in random:
+        if not (rand in ICC or random == 'none'):
+            print '\nOptions for random:', ','.join(ICC.keys())
+            return
 
     ## for now ignore nhits
     if not var in ['npmts_dt1', 'npmts_dt2']:
@@ -111,6 +112,7 @@ if __name__ == '__main__':
         print 'Example: python generator.py hz 0 free npmts_dt1'
         print 'Optional: python generator.py hz 0 free npmts_dt1 penalty=Bi210'
         print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210'
+        print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210,C14'
         print
         sys.exit(1)
 
@@ -120,7 +122,7 @@ if __name__ == '__main__':
     if not (pen or ran):
         params += ['none', 'none']
     else:
-        par = params[-1].split('=')[1]
+        par = params[-1].split('=')[1].split(',')
         pen = par if pen else 'none'
         ran = par if ran else 'none'
         params = params[:-1] + [pen,ran]
