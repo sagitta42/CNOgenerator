@@ -6,7 +6,7 @@ from math import ceil
 
 # total number of fits
 NFITS_min = 0 # including
-NFITS_max = 5 # not including
+NFITS_max = 10000 # not including
 # number of fits per one submission file
 NBATCH = 100
 # path to the input root files
