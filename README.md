@@ -3,6 +3,7 @@
 ```
 python generator.py hz 0 free npmts_dt1
 python generator.py hz 0 free npmts_dt1 penalty=Bi210
+python generator.py hz 0 free npmts_dt1 random=Bi210
 ```
 
 ## Parameters
