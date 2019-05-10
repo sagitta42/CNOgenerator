@@ -1,13 +1,17 @@
 import os
 from math import ceil
+import random as rnd
 
 class Submission():
-    def __init__(self, metal, inj, fit, var, nfits_min, nfits_max, penalty='none'):
+    def __init__(self, metal, inj, fit, var, nfits_min, nfits_max, penalty='none', random='none'):
         '''
         metal (str): 'hz' or 'lz'
         inj (str): '1' or '0'
         fit (str): 'free' or 'fixed'
         var (str): 'npmts_dt1' or 'npmts_dt2'
+        nfits_min, nfits_max (int): min and max number of the input files (e.g. from 0 to 10000, or 0 to 5000 etc)
+        penalty (str): species to which penalty should be applied (currently only Bi210). Penalty defined in ICC at the bottom of this file
+        random (str): species for which the mean is randomized for each fit (create separate species cc) (currently only Bi210)
         '''
         self.metal = metal
         self.inj = inj
@@ -16,18 +20,20 @@ class Submission():
         self.nfits_min = nfits_min
         self.nfits_max = nfits_max
         self.penalty = penalty # to be constrained
+        self.random = random # penalty + randomized mean
         
         ## corr. fitoptions and species lists filenames
         self.cfgname = 'fitoptions/fitoptions_' + metal + '_' + inj + '_' + var + '.cfg'
         pen = '' if self.penalty == 'none' else '_' + self.penalty + 'penalty'
-        self.iccname = 'species_list/species_' + fit + pen + '.icc'
+        ran = '' if self.random == 'none' else '_' + self.random + 'random'
+        self.iccname = 'species_list/species_' + fit + pen + ran + '.icc'
         
         ## corr. histograms inside of the input file
         self.cnofolder = metal + '_cno_' + inj # e.g. hz_cno_1
         self.cnohisto = 'cno_' + metal + '_' + inj
         
         ## folder for everything related to the given configuration
-        comboname = metal + '_' + inj + '_cno_' + fit + pen + '_' + var
+        comboname = metal + '_' + inj + '_cno_' + fit + pen + ran + '_' + var
         self.outfolder = 'fit_' + comboname 
         ## subfolder for the output log files
         self.logfolder = 'logs_' + comboname
@@ -94,8 +100,13 @@ class Submission():
             # the 5th line is the one that will be copied many times for each input file: full or relative path to the input root file
             inputname = input_folder + '/Sen_' + str(i) + '.root'
             logname = 'sen_' + str(i) + '_' + self.metal + '_' + self.inj + '_' + 'cno_' + self.fit + '_' + self.var + '.log'
-            
-            print >> fitfile, '$EXEC', inputname, self.cnofolder + '/TFC_sub/Hsub_' + self.cnohisto + '_0_' + self.var, self.cfgname, self.iccname, '2>&1 | tee', self.outfolder + '/' + self.logfolder + '/' + logname
+           
+            if self.random == 'none':
+                # the same species list for all fits
+                print >> fitfile, '$EXEC', inputname, self.cnofolder + '/TFC_sub/Hsub_' + self.cnohisto + '_0_' + self.var, self.cfgname, self.iccname, '2>&1 | tee', self.outfolder + '/' + self.logfolder + '/' + logname
+            else:
+                # different species list
+                print >> fitfile, '$EXEC', inputname, self.cnofolder + '/TFC_sub/Hsub_' + self.cnohisto + '_0_' + self.var, self.cfgname, self.iccname.split('.')[0] + '_' + str(i) + '.icc', '2>&1 | tee', self.outfolder + '/' + self.logfolder + '/' + logname
 
             counter+=1
             
@@ -168,10 +179,28 @@ class Submission():
             icclines[line_num] = line
         
         ## save file
-        outfile = open(self.iccname, 'w')
-        outfile.writelines(icclines)
-        outfile.close()
-        print '\tcreator.py: iccfile : generated'
+        if self.random == 'none':
+            # one species list for all fits
+            outfile = open(self.iccname, 'w')
+            outfile.writelines(icclines)
+            outfile.close()
+            print '\tcreator.py: iccfile : generated'
+        else:
+            # different one for each fit
+            line_num, line = ICC[self.random]
+            for i in range(self.nfits_min, self.nfits_max):
+                mn = rnd.gauss(10,2) # mean
+                lineparts = line.split(',')
+                lineparts[5] = ' ' + str(round(mn,2)) + ' '
+                lineparts[7] = ' ' + str(round(mn,2)) + ' '
+                icclines[line_num] = ','.join(lineparts)
+                outfile = open(self.iccname.split('.')[0] + '_' + str(i) + '.icc', 'w')
+                outfile.writelines(icclines)
+                outfile.close()
+            
+            num_fits = self.nfits_max - self.nfits_min
+            print '\tcreator.py: iccfiles: generated (', num_fits, ' files)'
+
 
 
 

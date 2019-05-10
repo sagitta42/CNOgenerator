@@ -19,13 +19,14 @@ from creator import *
 
 #----------------------------------------------------------
 
-def generator(metal, inj, fit, var, penalty):
+def generator(metal, inj, fit, var, penalty, random):
     '''
     0) metal: metallicity (hz or lz)
     1) inj: injected CNO (1 or 0)
     2) fit: how to fit CNO (fixed or free)
     3) var: energy variable (npmts_dt1, npmts_dt2 or nhits)
-    4) penalty: species to put penalty on (e.g. Bi210) or 'none'
+    4) penalty: species to put penalty on (e.g. Bi210) (optional)
+    5) random: species to make randomized mean for (e.g. Bi210) (optional)
     '''
 
     ## ---------------------------------
@@ -46,6 +47,10 @@ def generator(metal, inj, fit, var, penalty):
     if not (penalty in ICC or penalty == 'none'):
         print '\nOptions for penalty:', ','.join(ICC.keys())
         return
+    
+    if not (random in ICC or random == 'none'):
+        print '\nOptions for random:', ','.join(ICC.keys())
+        return
 
     ## for now ignore nhits
     if not var in ['npmts_dt1', 'npmts_dt2']:
@@ -56,7 +61,7 @@ def generator(metal, inj, fit, var, penalty):
     ## ---------------------------------
 
     ## init
-    s = Submission(metal, inj, fit, var, NFITS_min, NFITS_max, penalty)
+    s = Submission(metal, inj, fit, var, NFITS_min, NFITS_max, penalty, random)
     
     print # readability
     print '#######################################'
@@ -105,12 +110,19 @@ if __name__ == '__main__':
         print
         print 'Example: python generator.py hz 0 free npmts_dt1'
         print 'Optional: python generator.py hz 0 free npmts_dt1 penalty=Bi210'
+        print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210'
         print
         sys.exit(1)
 
-    if 'penalty' in params[-1]:
-        params[-1] = params[-1].split('=')[1]
+    pen = 'penalty' in params[-1]
+    ran = 'random' in params[-1]
+
+    if not (pen or ran):
+        params += ['none', 'none']
     else:
-        params.append('none')
+        par = params[-1].split('=')[1]
+        pen = par if pen else 'none'
+        ran = par if ran else 'none'
+        params = params[:-1] + [pen,ran]
 
     generator(*params)
