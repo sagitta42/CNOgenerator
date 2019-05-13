@@ -10,7 +10,8 @@ NFITS_max = 5 # not including
 # number of fits per one submission file
 NBATCH = 100
 # path to the input root files
-INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/final_senp3_half' # half exposure
+INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/final_senp3_full' # full exposure
+#INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/final_senp3_half' # half exposure
 #INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/senst'
 
 #----------------------------------------------------------
