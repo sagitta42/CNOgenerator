@@ -24,8 +24,8 @@ class Submission():
         
         ## corr. fitoptions and species lists filenames
         self.cfgname = 'fitoptions/fitoptions_' + metal + '_' + inj + '_' + var + '.cfg'
-        pen = '' if self.penalty == 'none' else '_' + self.penalty + 'penalty'
-        ran = '' if self.random == 'none' else '_' + '-'.join(self.random) + 'random'
+        pen = '' if self.penalty == 'none' else '_' + '-'.join(self.penalty) + '-penalty'
+        ran = '' if self.random == 'none' else '_' + '-'.join(self.random) + '-random'
         self.iccname = 'species_list/species_' + fit + pen + ran + '.icc'
         
         ## corr. histograms inside of the input file
@@ -175,8 +175,12 @@ class Submission():
 
         # extra: free (default) or penalty
         if self.penalty != 'none':
-            line_num, line = ICC[self.penalty]
-            icclines[line_num] = line
+            for pensp in self.penalty:
+                line_num, line = ICC[pensp]
+                if pensp in ['pp','pep']:
+                    icclines[line_num] = line[self.metal]
+                else:
+                    icclines[line_num] = line
         
         ## save file
         if self.random == 'none':
@@ -243,7 +247,12 @@ def make_executable(path):
 CNOICC = {'fixed': '   { "nu(CNO)",      -1,   kCyan,   kSolid,  2,    0.,   "fixed", 0.,  50. },\n',
             'free': '{ "nu(CNO)",      -1,   kCyan,   kSolid,  2,    5.36,   "free", 0.,  50. },\n'}
 
-ICC = {'Bi210': [27, '{ "Bi210",        -1,   kSpring, kSolid,  2,    17.5,    "penalty",  17.5,  2.0 },\n'],
-        'C14': [14, '{ "C14",          -1,   kViolet, kSolid,  2,    3.456e+6, "penalty", 3.456e+6, 17.28e+4 },\n']}
+# penalty: line number is line - 1 (i.e. line 1 is 0)
+ICC = {
+    'Bi210': [27, '{ "Bi210",        -1,   kSpring, kSolid,  2,    17.5,    "penalty",  17.5,  2.0 },\n'],
+    'C14': [13, '{ "C14",          -1,   kViolet, kSolid,  2,    3.456e+6, "penalty", 3.456e+6, 17.28e+4 },\n'],
+    'pp': [17, {'hz': '{ "nu(pp)",       -1,   kRed,   kSolid,  2,    131.1,   "penalty",  131.1., 1.4 },\n', 'lz': '{ "nu(pp)",       -1,   kRed,   kSolid,  2,    132.2,   "penalty",  132.2,  1.4 },\n'}],
+    'pep': [19, {'hz': '{ "nu(pep)",      -1,   kCyan,   kSolid,  2,    2.74,   "penalty", 2.74,  0.04 },\n', 'lz': '{ "nu(pep)",      -1,   kCyan,   kSolid,  2,    2.78,   "penalty", 2.78,  0.04 },\n'}]
+}
 
 RND = {'Bi210': [10,2], 'C14': [3456000, 172800]}

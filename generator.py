@@ -6,7 +6,7 @@ from math import ceil
 
 # total number of fits
 NFITS_min = 0 # including
-NFITS_max = 10000 # not including
+NFITS_max = 5 # not including
 # number of fits per one submission file
 NBATCH = 100
 # path to the input root files
@@ -43,10 +43,11 @@ def generator(metal, inj, fit, var, penalty, random):
     if not fit in ['fixed','free']:
         print '\nOptions for CNO fit: fixed or free\n'
         return
-        
-    if not (penalty in ICC or penalty == 'none'):
-        print '\nOptions for penalty:', ','.join(ICC.keys())
-        return
+    
+    for pen in penalty:
+        if not (pen in ICC or penalty == 'none'):
+            print '\nOptions for penalty:', ','.join(ICC.keys())
+            return
    
     for rand in random:
         if not (rand in ICC or random == 'none'):
@@ -105,26 +106,30 @@ def generator(metal, inj, fit, var, penalty, random):
 
 
 if __name__ == '__main__':
-    params = sys.argv[1:]
+    userinput = sys.argv[1:]
     
-    if not len(params) in [4,5]:
+    if not len(userinput) in [4,5,6]:
         print
         print 'Example: python generator.py hz 0 free npmts_dt1'
         print 'Optional: python generator.py hz 0 free npmts_dt1 penalty=Bi210'
         print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210'
         print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210,C14'
+        print 'Optional: python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14'
         print
         sys.exit(1)
 
-    pen = 'penalty' in params[-1]
-    ran = 'random' in params[-1]
+    params = userinput[:4] # the first four are always there e.g. hz 0 free npmts_dt1
 
-    if not (pen or ran):
-        params += ['none', 'none']
-    else:
-        par = params[-1].split('=')[1].split(',')
-        pen = par if pen else 'none'
-        ran = par if ran else 'none'
-        params = params[:-1] + [pen,ran]
+    ## penalty and random options
+    opts = {'penalty': 'none', 'random': 'none'}
 
+    for opt in ['penalty', 'random']:
+        for inp in userinput[4:]:
+            if opt in inp:
+                opts[opt] = inp.split('=')[1].split(',')
+            
+    params += [opts['penalty'], opts['random']]
+
+    print params
+        
     generator(*params)
