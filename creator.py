@@ -98,7 +98,7 @@ class Submission():
                 self.batch(findex)
 
             # the 5th line is the one that will be copied many times for each input file: full or relative path to the input root file
-            inputname = input_folder + '/Sen_' + str(i) + '.root'
+            inputname = input_folder + '/Senh_' + str(i) + '.root' # Senh for half exposure!!
             logname = 'sen_' + str(i) + '_' + self.metal + '_' + self.inj + '_' + 'cno_' + self.fit + '_' + self.var + '.log'
            
             if self.random == 'none':
