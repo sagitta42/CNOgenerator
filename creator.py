@@ -26,8 +26,10 @@ class Submission():
         ## corr. fitoptions and species lists filenames
         self.cfgname = 'fitoptions/fitoptions_' + metal + '_' + inj + '_' + var + '.cfg'
         pen = '' if self.penalty == 'none' else '_' + '-'.join(self.penalty) + '-penalty'
+        penicc = '-' + self.metal if 'pp' in self.penalty else ''
+
         ran = '' if self.random == 'none' else '_' + '-'.join(self.random) + '-random'
-        self.iccname = 'species_list/species_' + fit + pen + ran + '.icc'
+        self.iccname = 'species_list/species_' + fit + pen + penicc + ran + '.icc'
         
         ## corr. histograms inside of the input file
         self.cnofolder = metal + '_cno_' + inj # e.g. hz_cno_1
@@ -206,7 +208,7 @@ class Submission():
                 outfile.close()
             
             num_fits = len(self.inpnums) 
-            print '\tcreator.py: iccfiles: generated (', num_fits, ' files)'
+            print '\tcreator.py: iccfiles: generated (', num_fits, 'files )'
 
 
 
