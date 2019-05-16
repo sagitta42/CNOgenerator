@@ -6,7 +6,7 @@ from math import ceil
 
 # total number of fits
 NFITS_min = 0 # including
-NFITS_max = 5 # not including
+NFITS_max = 5000 # not including
 # number of fits per one submission file
 NBATCH = 100
 # path to the input root files
@@ -21,7 +21,7 @@ from creator import *
 
 #----------------------------------------------------------
 
-def generator(metal, inj, fit, var, penalty, random):
+def generator(metal, inj, fit, var, penalty, random, lst):
     '''
     0) metal: metallicity (hz or lz)
     1) inj: injected CNO (1 or 0)
@@ -29,6 +29,7 @@ def generator(metal, inj, fit, var, penalty, random):
     3) var: energy variable (npmts_dt1, npmts_dt2 or nhits)
     4) penalty: species to put penalty on (e.g. Bi210) (optional)
     5) random: species to make randomized mean for (e.g. Bi210) (optional)
+    6) list: list of input numbers (alternative to from  Nmin to Nmax)               
     '''
 
     ## ---------------------------------
@@ -65,7 +66,7 @@ def generator(metal, inj, fit, var, penalty, random):
     ## ---------------------------------
 
     ## init
-    s = Submission(metal, inj, fit, var, NFITS_min, NFITS_max, penalty, random)
+    s = Submission(metal, inj, fit, var, NFITS_min, NFITS_max, penalty, random, lst)
     
     print # readability
     print '#######################################'
@@ -110,9 +111,10 @@ def generator(metal, inj, fit, var, penalty, random):
 if __name__ == '__main__':
     userinput = sys.argv[1:]
     
-    if not len(userinput) in [4,5,6]:
+    if not len(userinput) in range(4,8):
         print
         print 'Example: python generator.py hz 0 free npmts_dt1'
+        print 'Optional: python generator.py hz 0 free npmts_dt1 list=list_of_input_numbers.list'
         print 'Optional: python generator.py hz 0 free npmts_dt1 penalty=Bi210'
         print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210'
         print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210,C14'
@@ -123,14 +125,16 @@ if __name__ == '__main__':
     params = userinput[:4] # the first four are always there e.g. hz 0 free npmts_dt1
 
     ## penalty and random options
-    opts = {'penalty': 'none', 'random': 'none'}
+    opts = {}
+    for opt in ['penalty', 'random', 'list']:
+        opts[opt] = 'none'
 
-    for opt in ['penalty', 'random']:
+    for opt in ['penalty', 'random', 'list']:
         for inp in userinput[4:]:
             if opt in inp:
-                opts[opt] = inp.split('=')[1].split(',')
+                opts[opt] = inp.split('=')[1] if opt == 'list' else inp.split('=')[1].split(',')
             
-    params += [opts['penalty'], opts['random']]
+    params += [opts['penalty'], opts['random'], opts['list']]
 
     print params
         

@@ -1,9 +1,10 @@
 import os
 from math import ceil
+import numpy as np
 import random as rnd
 
 class Submission():
-    def __init__(self, metal, inj, fit, var, nfits_min, nfits_max, penalty='none', random='none'):
+    def __init__(self, metal, inj, fit, var, nfits_min, nfits_max, penalty, random, lst):
         '''
         metal (str): 'hz' or 'lz'
         inj (str): '1' or '0'
@@ -12,15 +13,15 @@ class Submission():
         nfits_min, nfits_max (int): min and max number of the input files (e.g. from 0 to 10000, or 0 to 5000 etc)
         penalty (str): species to which penalty should be applied (currently only Bi210). Penalty defined in ICC at the bottom of this file
         random (list of str): species for which the mean is randomized for each fit (create separate species cc) (currently only Bi210)
+        lst (str): path to list of input numbers (alternative to nfits_min and nfits_max)                              
         '''
         self.metal = metal
         self.inj = inj
         self.fit = fit
         self.var = var
-        self.nfits_min = nfits_min
-        self.nfits_max = nfits_max
         self.penalty = penalty # to be constrained
         self.random = random # penalty + randomized mean
+        self.inpnums = range(nfits_min, nfits_max) if lst == 'none' else np.array(open(lst).readlines()).astype(int)
         
         ## corr. fitoptions and species lists filenames
         self.cfgname = 'fitoptions/fitoptions_' + metal + '_' + inj + '_' + var + '.cfg'
@@ -57,7 +58,7 @@ class Submission():
     def fitfiles(self, nbatch, input_folder):
         ''' Create .sh fit files for given parameters (20 files) '''
 
-        num_fits = self.nfits_max - self.nfits_min
+        num_fits = len(self.inpnums)
         # folder to store the fitfiles
         os.mkdir(self.outfolder + '/' + self.fitfolder)
         print '|'
@@ -77,8 +78,8 @@ class Submission():
 #        fitfile = open('.temp','w') # dummy
     
         counter = 0
-        for i in range(self.nfits_min, self.nfits_max):
-            
+
+        for i in self.inpnums:             
             ## every 5 files do:
             if(counter % nbatch == 0):
                 if fitfile:
@@ -191,7 +192,7 @@ class Submission():
             print '\tcreator.py: iccfile : generated'
         else:
             # different one for each fit
-            for i in range(self.nfits_min, self.nfits_max):
+            for i in self.inpnums: 
                 for ransp in self.random:
                     line_num, line = ICC[ransp]
                     mn = rnd.gauss(RND[ransp][0], RND[ransp][1]) # mean
@@ -204,7 +205,7 @@ class Submission():
                 outfile.writelines(icclines)
                 outfile.close()
             
-            num_fits = self.nfits_max - self.nfits_min
+            num_fits = len(self.inpnums) 
             print '\tcreator.py: iccfiles: generated (', num_fits, ' files)'
 
 
@@ -215,7 +216,7 @@ class Submission():
         os.mkdir(self.outfolder + '/' + self.logfolder)
         print '|'
         print ' - Subfolder for future log files:', self.logfolder + '/'
-        print '|\t( sen_X_' + self.metal + '_' + self.inj + '_' + 'cno_' + self.fit + '_' + self.var + '.log, X = ' + str(self.nfits_min) + '..' + str(self.nfits_max) + ' )'
+        print '|\t( sen_X_' + self.metal + '_' + self.inj + '_' + 'cno_' + self.fit + '_' + self.var + '.log'
 
 
     def batch(self, findex):
