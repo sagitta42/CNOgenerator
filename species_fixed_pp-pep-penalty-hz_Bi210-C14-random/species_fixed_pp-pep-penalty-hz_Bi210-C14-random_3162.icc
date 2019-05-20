@@ -11,7 +11,7 @@
 // Set initial conditions and bounds for the fit
 //   Name            Param Color    Style    Thick Guess   Fixed?   Min  Max	
 // { "C14",          -1,   kViolet, kSolid,  2,    4.0e+6, "free",  0.,  6.0e+6 },
-{ "C14",          -1,   kViolet, kSolid,  2, 3437404.81 , "penalty", 3437404.81 , 17.28e+4 },
+{ "C14",          -1,   kViolet, kSolid,  2, 3492530.29 , "penalty", 3492530.29 , 17.28e+4 },
 // { "synthpup",     -1,   kViolet, kDashed, 2,    200.,   "free",  0.,  450. },
 // { "C14_pileup_q", -1,   kViolet, kDashed, 2,    200.,   "free",  0.,  450. },
 
