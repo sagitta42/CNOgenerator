@@ -2,6 +2,7 @@ import os
 from math import ceil
 import numpy as np
 import random as rnd
+rnd.seed(1)
 
 class Submission():
     def __init__(self, metal, inj, fit, var, nfits_min, nfits_max, penalty, random, lst):
