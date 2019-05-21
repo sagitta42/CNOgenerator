@@ -6,6 +6,7 @@ python generator.py hz 0 free npmts_dt1 penalty=Bi210
 python generator.py hz 0 free npmts_dt1 random=Bi210
 python generator.py hz 0 free npmts_dt1 random=Bi210,C14
 python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14
+python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14 list=good_root_5000_nums.list 
 
 ```
 
