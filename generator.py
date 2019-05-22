@@ -119,6 +119,7 @@ if __name__ == '__main__':
         print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210'
         print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210,C14'
         print 'Optional: python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14'
+        print 'Optional: python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14 list=good_root_5000_nums.list'
         print
         sys.exit(1)
 
