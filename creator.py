@@ -25,12 +25,15 @@ class Submission():
         self.inpnums = range(nfits_min, nfits_max) if lst == 'none' else np.array(open(lst).readlines()).astype(int)
         
         ## corr. fitoptions and species lists filenames
-        self.cfgname = 'fitoptions/fitoptions_' + metal + '_' + inj + '_' + var + '.cfg'
+        if self.penalty[0] == 'pp/pep': self.penalty[0] = 'ppDpep'
         pen = '' if self.penalty == 'none' else '_' + '-'.join(self.penalty) + '-penalty'
-        penicc = '-' + self.metal if 'pp' in self.penalty else ''
+        penmet = '-' + self.metal if 'pp' in ''.join(self.penalty) else ''
 
+        pencfg = pen + penmet if self.penalty[0] == 'ppDpep' else ''
+        self.cfgname = 'fitoptions/fitoptions_' + metal + '_' + inj + '_' + var + pencfg + '.cfg'
         ran = '' if self.random == 'none' else '_' + '-'.join(self.random) + '-random'
-        self.iccname = 'species_list/species_' + fit + pen + penicc + ran + '.icc'
+        penicc = pen + penmet if self.penalty[0] != 'ppDpep' else ''
+        self.iccname = 'species_list/species_' + fit + penicc + ran + '.icc'
         
         ## corr. histograms inside of the input file
         self.cnofolder = metal + '_cno_' + inj # e.g. hz_cno_1
@@ -155,6 +158,14 @@ class Submission():
 
         # line 103: dark noise
         cfglines[102] = 'dark_noise_window = win' + self.var[-1] + '\n'
+
+        # line 112 pp/pep constraint
+        if self.penalty[0] == 'ppDpep':
+            cfglines[111] = 'apply_pp/pep_constrain = true\n'
+            cfglines[112] = 'mean(Rpp/Rpep) = ' + str(PPPEP[self.metal][0]) + '\n'
+            cfglines[113] = 'sigma(Rpp/Rpep) = ' + str(PPPEP[self.metal][1]) + '\n'
+
+
         
         ## save file
         outfile = open(self.cfgname, 'w')
@@ -180,6 +191,7 @@ class Submission():
         # extra: free (default) or penalty
         if self.penalty != 'none':
             for pensp in self.penalty:
+                if pensp == 'ppDpep': continue
                 line_num, line = ICC[pensp]
                 if pensp in ['pp','pep']:
                     icclines[line_num] = line[self.metal]
@@ -219,7 +231,7 @@ class Submission():
         os.mkdir(self.outfolder + '/' + self.logfolder)
         print '|'
         print ' - Subfolder for future log files:', self.logfolder + '/'
-        print '|\t( sen_X_' + self.metal + '_' + self.inj + '_' + 'cno_' + self.fit + '_' + self.var + '.log'
+        print '|\t( sen_X_' + self.metal + '_' + self.inj + '_' + 'cno_' + self.fit + '_' + self.var + '.log )'
 
 
     def batch(self, findex):
@@ -260,3 +272,5 @@ ICC = {
 }
 
 RND = {'Bi210': [10,2], 'C14': [3456000, 172800]}
+
+PPPEP = {'hz': [47.76, 0.84], 'lz': [47.5, 0.8]}

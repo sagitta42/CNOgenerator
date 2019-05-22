@@ -48,7 +48,7 @@ def generator(metal, inj, fit, var, penalty, random, lst):
         return
     
     for pen in penalty:
-        if not (pen in ICC or penalty == 'none'):
+        if not ((pen in ICC) or (pen == 'pp/pep') or penalty == 'none'):
             print '\nOptions for penalty:', ','.join(ICC.keys())
             return
    
@@ -113,13 +113,15 @@ if __name__ == '__main__':
     
     if not len(userinput) in range(4,8):
         print
-        print 'Example: python generator.py hz 0 free npmts_dt1'
-        print 'Optional: python generator.py hz 0 free npmts_dt1 list=list_of_input_numbers.list'
-        print 'Optional: python generator.py hz 0 free npmts_dt1 penalty=Bi210'
-        print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210'
-        print 'Optional: python generator.py hz 0 free npmts_dt1 random=Bi210,C14'
-        print 'Optional: python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14'
-        print 'Optional: python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14 list=good_root_5000_nums.list'
+        print 'Examples:'
+        print 'python generator.py hz 0 free npmts_dt1'
+        print 'python generator.py hz 0 free npmts_dt1 list=list_of_input_numbers.list'
+        print 'python generator.py hz 0 free npmts_dt1 penalty=Bi210'
+        print 'python generator.py hz 0 free npmts_dt1 random=Bi210'
+        print 'python generator.py hz 0 free npmts_dt1 random=Bi210,C14'
+        print 'python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14'
+        print 'python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14 list=good_root_5000_nums.list'
+        print 'python generator.py hz 0 free npmts_dt1 penalty=pp/pep random=Bi210,C14 list=good_root_5000_nums.list'
         print
         sys.exit(1)
 
