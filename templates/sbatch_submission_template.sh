@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=1 
 #SBATCH --output=gpu-out.%j 
 #SBATCH --error=gpu-err.%j 
-#SBATCH --time=24:00:00 
+#SBATCH --time=06:00:00 
 #SBATCH --partition=gpus
 #SBATCH --account=jikp20 
 #SBATCH --gres=gpu:4 
