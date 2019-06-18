@@ -8,6 +8,7 @@ python generator.py hz 0 free npmts_dt1 random=Bi210,C14
 python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14
 python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14 list=good_root_5000_nums.list 
 python generator.py hz 0 free npmts_dt1 penalty=pp/pep random=Bi210,C14 list=good_root_5000_nums.list 
+python generator.py hz 0 free npmts_dt1 penalty=pp,pep,Kr85 random=Bi210,C14 list=good_root_full_1100_nums.list 
 
 ```
 
@@ -21,8 +22,12 @@ NFITS_max = 1000 # not including
 # number of fits per one submission file
 NBATCH = 100
 # path to the input root files
-INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/senst'
+INPUT = '/p/project/cjikp20/jikp2001/BxFitterData/final_senp3_full' # full exposure
 ```
+
+If input list is not given, NFITS_min and max will be used, and the input path INPUT will be used. The exposure (full or half) will be deduced from the INPUT name.
+If input list is given, these variables are ignored. Fit numbers from the list are taken, and the exposure is deduced from the list filename
+
 ## Inputs and outputs to the code
 
 ```

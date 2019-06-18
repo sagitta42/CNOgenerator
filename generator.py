@@ -6,7 +6,7 @@ from math import ceil
 
 # total number of fits
 NFITS_min = 0 # including
-NFITS_max = 5000 # not including
+NFITS_max = 1100 # not including
 # number of fits per one submission file
 NBATCH = 100
 # path to the input root files
@@ -83,7 +83,8 @@ def generator(metal, inj, fit, var, penalty, random, lst):
     
     ## main .sh fit files: split 10000 fits into files of 500 fits (-> 20 files)
     ## also batch files (in parallel)
-    s.fitfiles(NBATCH, INPUT)
+    inpfolder = INPUT if lst == 'none' else None # if list given, check which exposure; if not given, take the one specified on top of this file
+    s.fitfiles(NBATCH, inpfolder)
     
     ## output folder for the log files
     s.logfiles()
@@ -122,6 +123,7 @@ if __name__ == '__main__':
         print 'python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14'
         print 'python generator.py hz 0 free npmts_dt1 penalty=pp,pep random=Bi210,C14 list=good_root_5000_nums.list'
         print 'python generator.py hz 0 free npmts_dt1 penalty=pp/pep random=Bi210,C14 list=good_root_5000_nums.list'
+        print 'python generator.py hz 0 free npmts_dt1 penalty=pp,pep,Kr85 random=Bi210,C14 list=good_root_full_nums_1100.list'
         print
         sys.exit(1)
 

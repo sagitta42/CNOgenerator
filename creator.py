@@ -23,6 +23,7 @@ class Submission():
         self.penalty = penalty # to be constrained
         self.random = random # penalty + randomized mean
         self.inpnums = range(nfits_min, nfits_max) if lst == 'none' else np.array(open(lst).readlines()).astype(int)
+        self.exp = 'none' if lst == 'none' else lst.split('_')[2] # full or half exposure
         
         ## corr. fitoptions and species lists filenames
         if self.penalty[0] == 'pp/pep': self.penalty[0] = 'ppDpep'
@@ -63,6 +64,11 @@ class Submission():
         
     def fitfiles(self, nbatch, input_folder):
         ''' Create .sh fit files for given parameters (20 files) '''
+
+        if input_folder == None:
+            input_folder = '/p/project/cjikp20/jikp2001/BxFitterData/final_senp3_' + self.exp
+        else:
+            self.exp = input_folder.split('_')[-1]
 
         num_fits = len(self.inpnums)
         # folder to store the fitfiles
@@ -105,7 +111,8 @@ class Submission():
                 self.batch(findex)
 
             # the 5th line is the one that will be copied many times for each input file: full or relative path to the input root file
-            inputname = input_folder + '/Senf_' + str(i) + '.root' # Senh for half exposure, Senf for full!
+            
+            inputname = input_folder + '/Sen' + self.exp[0] + '_' + str(i) + '.root' # Senh for half exposure, Senf for full!
             logname = 'sen_' + str(i) + '_' + self.metal + '_' + self.inj + '_' + 'cno_' + self.fit + '_' + self.var + '.log'
            
             if self.random == 'none':
